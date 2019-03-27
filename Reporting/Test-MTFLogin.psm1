@@ -83,7 +83,7 @@ function Test-MTFLogin
         finally{
         }
 
-        Send-MailMessage -From $MailAdress -To $MailAdress -Subject 'Result Login Test' -Attachments "C:\Temp\Result.csv" -SmtpServer $SMTPServer -Credential $SMTPCredentials -UseSsl -ErrorAction SilentlyContinue
+        Send-MailMessage -From $MailAdress -To $MailAdress -Subject 'Result Login Test' -Attachments "C:\Temp\Result.csv" -SmtpServer $SMTPServer -Credential $SMTPCredentials -UseSsl -ErrorAction Ignore
     }
     End
     {
