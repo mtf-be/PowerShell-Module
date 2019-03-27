@@ -9,9 +9,9 @@
    Die Variable "MailAdress" ist für Empfänger und Absender.
    Die Variable "SMTPCredentials" ist für den Mailbox Zugriff
 .EXAMPLE
-   MTFTest-Login -Credentials Domain\User -SMTPServer smtp.mailserver.com -MailAdress administrator@domain.com -SMTPCredentials Domain\User
+   Test-MTFLogin -Credentials Domain\User -SMTPServer smtp.mailserver.com -MailAdress administrator@domain.com -SMTPCredentials Domain\User
 #>
-function MTFTest-Login
+function Test-MTFLogin
 {
     [CmdletBinding()]
     [Alias()]
