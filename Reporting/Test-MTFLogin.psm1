@@ -23,7 +23,7 @@ function Test-MTFLogin
         [Parameter(Mandatory=$true,
                    ValueFromPipelineByPropertyName=$true,
                    Position=0)]
-        [System.Management.Automation.PSCredential]$Credentials = "Get-Credential",
+        $Credentials = [System.Management.Automation.PSCredential]::Empty,
 
 
         [Parameter(Mandatory=$false,
@@ -41,7 +41,7 @@ function Test-MTFLogin
         [Parameter(Mandatory=$false,
                    ValueFromPipelineByPropertyName=$true,
                    Position=3)]
-        [System.Management.Automation.PSCredential]$SMTPCredentials = "Get-Credential"
+        $SMTPCredentials = [System.Management.Automation.PSCredential]::Empty
     )
 
     Begin
@@ -49,9 +49,7 @@ function Test-MTFLogin
     }
     Process
     {
-        if(!(Get-EventLog "MTF Login Test")) {
-            New-EventLog -Source "MTF Login Test"
-        }
+        New-EventLog -LogName Application -Source "MTF Login Test" -ErrorAction Ignore
         
         $time = (Get-Date).AddDays(-90)
         $servers = Get-ADComputer -Filter {LastLogonDate -gt $time -and OperatingSystem -like "Windows Server*"} -Properties * | Select Name -ExpandProperty Name
