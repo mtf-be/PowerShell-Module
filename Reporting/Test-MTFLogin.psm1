@@ -49,6 +49,10 @@ function Test-MTFLogin
     }
     Process
     {
+        if(!(Get-EventLog "MTF Login Test")) {
+            New-EventLog -Source "MTF Login Test"
+        }
+        
         $time = (Get-Date).AddDays(-90)
         $servers = Get-ADComputer -Filter {LastLogonDate -gt $time -and OperatingSystem -like "Windows Server*"} -Properties * | Select Name -ExpandProperty Name
 
