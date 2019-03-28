@@ -63,10 +63,12 @@ function Test-MTFLogin
                     }
                     else {
                         $status = "online but unable to connect"
+                       Write-EventLog -LogName Application -Source "MTF Login Test" -EventId 2000 -EntryType Error -Message "Couldn't connect..."
                     }
                 }
                 else {
                     $status = "$offline/not in DNS"
+                    Write-EventLog -LogName Application -Source "MTF Login Test" -EventId 2000 -EntryType Error -Message "Is offline..."
                 }
 
                 Write-Host $server" "$status
