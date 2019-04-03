@@ -13,5 +13,5 @@ Copy-Item C:\Users\$env:USERNAME\Downloads\Get-MTFProcessStatus.psm1 -Destinatio
 ## Usage
 Get-MTFProcessStatus -Process explorer.exe
 
-## What does it do?
+## What does it?
 It generates an eventlog (ID 2000 in Application) when the process (defined with -Process) doesn't generates any I/O's
