@@ -31,16 +31,11 @@ function Get-MTFProcessStatus
 
         while($true) {
            $result = Get-WmiObject -Class Win32_Process | Where {$_.Caption -eq $Process}
-           $object = New-Object PSObject -Property @{ProcessName = $Process; Inputs = $result.ReadTransferCount; Outputs = $result.WriteTransferCount}
+           $object = New-Object PSObject -Property @{ProcessName = $Process; Inputs = $result.ReadTransferCount; Outputs = $result.WriteTransferCount;}
 
-
-$message = @"
-ProcessName: $($object.ProcessName)
-Inputs: $($object.Inputs)
-Outputs: $($object.Outputs)
-"@
-
-           Write-EventLog -LogName Application -Source "MTF Process Test" -EventId 1000 -EntryType Information -Message "$message"
+           if($object.Inputs -eq 0 -and $object.Output -eq 0) {
+                Write-EventLog -LogName Application -Source "MTF Process Test" -Message "$($object.ProcessName) has no more I/O's" -EventId 2000 -ErrorAction SilentlyContinue
+           }
 
            $object = New-Object PSObject
         }
