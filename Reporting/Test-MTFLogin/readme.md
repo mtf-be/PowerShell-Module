@@ -11,7 +11,12 @@ Copy-Item C:\Users\$env:USERNAME\Downloads\Test-MTFLogin.psm1 -Destination C:\Us
 ```
 
 ## Usage
-Test-MTFLogin 
+```
+Test-MTFLogin -Credentials Domain\User
+```
+```
+Test-MTFLogin -Credentials Domain\User -SMTPServer smtp.mailserver.com -MailAdress administrator@domain.com -SMTPCredentials Domain\User
+```
 
 ## What does it?
-It generates an eventlog (ID 2000 in Application) when the process (defined with -Process) doesn't generates any I/O's
+It generates a report which tells you where you can login.
