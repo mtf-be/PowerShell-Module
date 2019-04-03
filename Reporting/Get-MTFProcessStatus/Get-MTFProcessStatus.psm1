@@ -1,12 +1,13 @@
 ﻿<#
 .Synopsis
-   Kurzbeschreibung
+   Untersucht ob der angegeben Prozess noch am laufen ist.
 .DESCRIPTION
-   Lange Beschreibung
+   Es untersucht den angegebenen Prozess ob er noch I/O's produziert oder nicht.
+   Wenn der Prozess keine I/O's generiert, wird ein Eventlog in "Application/MTF Process Test" mit der EventID 2000 geschrieben.
 .EXAMPLE
-   Beispiel für die Verwendung dieses Cmdlets
+   Get-MTFProcessStatus -Process explorer.exe
 .EXAMPLE
-   Ein weiteres Beispiel für die Verwendung dieses Cmdlets
+   Get-MTFProcessStatus -Process chrome.exe
 #>
 function Get-MTFProcessStatus
 {
@@ -15,7 +16,6 @@ function Get-MTFProcessStatus
     [OutputType([int])]
     Param
     (
-        # Hilfebeschreibung zu Param1
         [Parameter(Mandatory=$true,
                    ValueFromPipelineByPropertyName=$true,
                    Position=0)]
