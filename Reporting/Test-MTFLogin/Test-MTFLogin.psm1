@@ -9,7 +9,7 @@
    Die Variable "MailAdress" ist für Empfänger und Absender.
    Die Variable "SMTPCredentials" ist für den Mailbox Zugriff
 .EXAMPLE
-   Test-MTFLogin -Credentials Domain\User
+   Test-MTFLogin -Credentials Domain\User -Password DEINPASSWORT
 .EXAMPLE
    Test-MTFLogin -Credentials Domain\User -SMTPServer smtp.mailserver.com -MailAdress administrator@domain.com -SMTPCredentials Domain\User
 #>
@@ -25,6 +25,11 @@ function Test-MTFLogin
                    Position=0)]
         $Credentials = [System.Management.Automation.PSCredential]::Empty,
 
+        
+        [Parameter(Mandatory=$true,
+                   ValueFromPipelineByPropertyName=$true,
+                   Position=0)]
+        $password = [System.Management.Automation.PSCredential]::Empty,
 
         [Parameter(Mandatory=$false,
                    ValueFromPipelineByPropertyName=$true,
@@ -51,13 +56,18 @@ function Test-MTFLogin
     {
         New-EventLog -LogName Application -Source "MTF Login Test" -ErrorAction Ignore
         
+        $pass = ConvertTo-SecureString -AsPlainText $password -Force
+        $SecureString = $pass
+
+        $MyCred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Credentials,$SecureString
+
         $time = (Get-Date).AddDays(-90)
         $servers = Get-ADComputer -Filter {LastLogonDate -gt $time -and OperatingSystem -like "Windows Server*"} -Properties * | Select Name -ExpandProperty Name
 
         try {
             foreach ($server in $servers) {
                 if(Test-Connection $server -Count 3 -ErrorAction SilentlyContinue) {
-                    if(New-PSDrive -Name ConnectionTest -PSProvider FileSystem -Root "\\$server\c$" -Credential $cred -ErrorAction SilentlyContinue) {
+                    if(New-PSDrive -Name ConnectionTest -PSProvider FileSystem -Root "\\$server\c$" -Credential $MyCred -ErrorAction SilentlyContinue) {
                         $status = "online and able to connect"
                         Remove-PSDrive ConnectionTest
                     }
@@ -85,7 +95,7 @@ function Test-MTFLogin
         finally{
         }
 
-        Send-MailMessage -From $MailAdress -To $MailAdress -Subject 'Result Login Test' -Attachments "C:\Temp\Result.csv" -SmtpServer $SMTPServer -Credential $SMTPCredentials -UseSsl -ErrorAction Ignore
+       # Send-MailMessage -From $MailAdress -To $MailAdress -Subject 'Result Login Test' -Attachments "C:\Temp\Result.csv" -SmtpServer $SMTPServer -Credential $SMTPCredentials -UseSsl -ErrorAction Ignore
     }
     End
     {
