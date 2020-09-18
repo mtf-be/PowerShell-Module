@@ -9,7 +9,7 @@
    Die Variable "MailAdress" ist für Empfänger und Absender.
    Die Variable "SMTPCredentials" ist für den Mailbox Zugriff
 .EXAMPLE
-   Test-MTFLogin -Credentials Domain\User -Password DEINPASSWORT
+   Test-MTFLogin -Credentials Domain\User -Password DEINPASSWORT -Exclude 'SERVER1'
 .EXAMPLE
    Test-MTFLogin -Credentials Domain\User -SMTPServer smtp.mailserver.com -MailAdress administrator@domain.com -SMTPCredentials Domain\User
 #>
@@ -22,31 +22,37 @@ function Test-MTFLogin
     (
         [Parameter(Mandatory=$true,
                    ValueFromPipelineByPropertyName=$true,
-                   Position=0)]
+                   Position=1)]
         $Credentials = [System.Management.Automation.PSCredential]::Empty,
 
         
         [Parameter(Mandatory=$true,
                    ValueFromPipelineByPropertyName=$true,
-                   Position=0)]
+                   Position=2)]
         $password = [System.Management.Automation.PSCredential]::Empty,
 
         [Parameter(Mandatory=$false,
                    ValueFromPipelineByPropertyName=$true,
-                   Position=1)]
+                   Position=3)]
         [string]$SMTPServer = "",
 
 
         [Parameter(Mandatory=$false,
                    ValueFromPipelineByPropertyName=$true,
-                   Position=2)]
+                   Position=4)]
         [string]$MailAdress = "",
 
 
         [Parameter(Mandatory=$false,
                    ValueFromPipelineByPropertyName=$true,
-                   Position=3)]
-        $SMTPCredentials = [System.Management.Automation.PSCredential]::Empty
+                   Position=5)]
+		$SMTPCredentials = [System.Management.Automation.PSCredential]::Empty,
+		
+		
+		[Parameter(Mandatory = $true,
+				   ValueFromPiplineByPropertyName=$true,
+			 	   Position=6)]
+		[string]$Exclude = ''
     )
 
     Begin
@@ -62,9 +68,9 @@ function Test-MTFLogin
         $MyCred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Credentials,$SecureString
 
         $time = (Get-Date).AddDays(-90)
-        $servers = Get-ADComputer -Filter {LastLogonDate -gt $time -and OperatingSystem -like "Windows Server*"} -Properties * | Select Name -ExpandProperty Name
-
-        try {
+        $servers = Get-ADComputer -Filter {LastLogonDate -gt $time -and OperatingSystem -like "Windows Server*"} -Properties * | Select Name -ExpandProperty Name | Where-Object { $_.Name -ne $Exclude }
+		
+		try {
             foreach ($server in $servers) {
                 if(Test-Connection $server -Count 3 -ErrorAction SilentlyContinue) {
                     if(New-PSDrive -Name ConnectionTest -PSProvider FileSystem -Root "\\$server\c$" -Credential $MyCred -ErrorAction SilentlyContinue) {
